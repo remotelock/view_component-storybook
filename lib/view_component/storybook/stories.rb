@@ -2,8 +2,18 @@
 
 module ViewComponent
   module Storybook
+    # Deprecated: write a plain `ViewComponent::Preview`. Its controls are inferred from the component's
+    # dry-types options and the examples' keyword defaults, and `@title` sets its title.
     class Stories < ViewComponent::Preview
       class << self
+        def inherited(child)
+          super
+          Storybook.deprecator.warn(
+            "#{child.name || 'A'} subclasses ViewComponent::Storybook::Stories, which is deprecated. " \
+            "Write a ViewComponent::Preview instead: view_component-storybook 2 reads previews."
+          )
+        end
+
         def title(title = nil)
           @stories_title = title
         end
@@ -16,8 +26,8 @@ module ViewComponent
           layout_collection.add(layout, only: only, except: except)
         end
 
-        def control(param, as:, **opts)
-          controls.add(param, as: as, **opts)
+        def control(param, as:, **)
+          controls.add(param, as: as, **)
         end
 
         def stories_name
@@ -28,75 +38,52 @@ module ViewComponent
           stories_name
         end
 
-        def to_csf_params
-          csf_params = { title: stories_title }
-          csf_params[:parameters] = parameters_collection.for_all if parameters_collection.for_all.present?
-          csf_params[:stories] = stories.map(&:to_csf_params)
-          csf_params
+        def stories_title_override
+          @stories_title
         end
 
-        def write_csf_json
-          File.write(stories_json_path, JSON.pretty_generate(to_csf_params))
-          stories_json_path
+        def storybook_parameters
+          parameters_collection.for_all
         end
 
-        def stories
-          @stories ||= story_names.map { |name| Story.new(story_id(name), name, parameters_collection.for_story(name), controls.for_story(name)) }
+        def storybook_story_parameters(story_name)
+          parameters_collection.for_story(story_name)
         end
 
-        # find the story by name
-        def find_story(name)
-          stories.find { |story| story.name == name.to_sym }
+        def storybook_controls(story_name, code_object)
+          return [] unless code_object
+
+          controls.code_object = code_object
+          controls.for_story(story_name)
         end
 
-        # Returns the arguments for rendering of the component in its layout
         def render_args(story_name, params: {})
-          # mostly reimplementing the super method but adding logic to parse the params through the controls and find the layout
-          story_params_names = instance_method(story_name).parameters.map(&:last)
-          provided_params = params.slice(*story_params_names).to_h.symbolize_keys
-
-          story = find_story(story_name)
-
-          control_parsed_params = provided_params.to_h do |param, value|
-            control = story.controls.find { |c| c.param == param }
-            value = control.parse_param_value(value) if control
-
-            [param, value]
-          end
-
-          result = control_parsed_params.empty? ? new.public_send(story_name) : new.public_send(story_name, **control_parsed_params)
-          result ||= {}
-          result[:template] = preview_example_template_path(story_name) if result[:template].nil?
           @layout = layout_collection.for_story(story_name.to_sym)
-          result.merge(layout: @layout)
+          super
         end
 
-        attr_reader :code_object, :stories_json_path
+        delegate :to_csf_params, to: :storybook
 
-        def code_object=(object)
-          @code_object = object
-          @stories_json_path ||= begin
-            dir = File.dirname(object.file)
-            json_filename = object.path.demodulize.underscore
+        delegate :write_csf_json, to: :storybook
 
-            File.join(dir, "#{json_filename}.stories.json")
-          end
+        delegate :stories, to: :storybook
 
-          controls.code_object = object
+        delegate :find_story, to: :storybook
 
-          # ordering of public_instance_methods isn't consistent
-          # use the code_object to sort the methods to the order that they're declared
-          @story_names = object.meths.select { |m| story_names.include?(m.name) }.map(&:name)
+        delegate :code_object, to: :storybook
+
+        def stories_json_path
+          storybook.json_path
         end
 
         private
 
-        def controls
-          @controls ||= Collections::ControlsCollection.new
+        def storybook
+          Storybook.previews.find(self) || PreviewStories.new(self, nil)
         end
 
-        def stories_title
-          @stories_title ||= Storybook.stories_title_generator.call(self)
+        def controls
+          @controls ||= Collections::ControlsCollection.new
         end
 
         def parameters_collection
@@ -105,14 +92,6 @@ module ViewComponent
 
         def layout_collection
           @layout_collection ||= Collections::LayoutCollection.new
-        end
-
-        def story_names
-          @story_names ||= public_instance_methods(false)
-        end
-
-        def story_id(name)
-          "#{stories_name}/#{name.to_s.parameterize}".underscore
         end
       end
     end

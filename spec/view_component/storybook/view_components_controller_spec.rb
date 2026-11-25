@@ -125,7 +125,7 @@ RSpec.describe ViewComponentsController, type: :request do
           verb_one: "Heavy",
           noun_one: "Rock",
           verb_two: "Light",
-          noun_two: "Feather",
+          noun_two: "Feather"
         }
 
     expect(response.body).to have_selector("p", text: "Heavy Rock")
@@ -189,7 +189,7 @@ RSpec.describe ViewComponentsController, type: :request do
   end
 
   it "raises ActionNotFound error story that doesn't exist" do
-    expect { get "/rails/view_components/demo/button_component/junk" }.to raise_exception(NameError)
+    expect { get "/rails/view_components/demo/button_component/junk" }.to raise_exception(AbstractController::ActionNotFound)
   end
 
   it "returns 200 for a stories index" do
@@ -234,7 +234,7 @@ RSpec.describe ViewComponentsController, type: :request do
     it "allows stories to set the layout" do
       get "/rails/view_components/layout/default"
 
-      expect(response.body).to have_title( "Stories Dummy App - Admin")
+      expect(response.body).to have_title("Stories Dummy App - Admin")
     end
 
     it "allows story to override the stories layout" do
