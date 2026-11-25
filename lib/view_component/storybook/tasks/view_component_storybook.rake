@@ -1,37 +1,38 @@
 # frozen_string_literal: true
 
 namespace :view_component_storybook do
-  desc "Write CSF JSON stories for all Stories"
+  desc "Write a CSF *.stories.json for every ViewComponent preview"
   task write_stories_json: :environment do
     puts "Writing Stories JSON"
     exceptions = []
-    ViewComponent::Storybook::Engine.stories.each do |stories|
-      json_path = stories.write_csf_json
-      puts "#{stories.name} => #{json_path}"
+    ViewComponent::Storybook.previews.each do |preview|
+      puts "#{preview.preview_class.name} => #{preview.write_csf_json}"
     rescue StandardError => e
-      exceptions << e
+      exceptions << "#{preview.preview_class.name}: #{e.message}"
     end
 
-    raise StandardError, exceptions.map(&:message).join(", ") if exceptions.present?
+    raise StandardError, exceptions.join(", ") if exceptions.present?
 
     puts "Done"
   end
 
-  desc "Remove all existing CSF JSON Stories"
+  desc "Remove the *.stories.json files write_stories_json wrote"
   task remove_stories_json: :environment do
-    puts "Removing old Stories JSON"
-    exceptions = []
-    ViewComponent::Storybook.stories_paths.each do |path|
-      Dir["#{path}/**/*.stories.json"].sort.each do |file|
-        puts file
-        File.unlink(file)
-      rescue StandardError => e
-        exceptions << e
-      end
+    puts "Removing Stories JSON"
+    ViewComponent::Storybook.previews.each do |preview|
+      next unless File.exist?(preview.json_path)
+
+      puts preview.json_path
+      File.unlink(preview.json_path)
     end
 
-    raise StandardError, exceptions.map(&:message).join(", ") if exceptions.present?
-
     puts "Done"
+  end
+
+  desc "Render every story at its default args to <dir>/<story id>.html, for a static Storybook"
+  task :write_static_html, [:dir] => :environment do |_task, args|
+    dir = args[:dir].presence || ViewComponent::Storybook.static_html_path
+    files = ViewComponent::Storybook::StaticHtml.write(dir)
+    puts "Wrote #{files.size} stories to #{dir}"
   end
 end
