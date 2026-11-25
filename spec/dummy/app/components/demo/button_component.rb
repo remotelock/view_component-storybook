@@ -3,7 +3,7 @@
 module Demo
   class ButtonComponent < ViewComponent::Base
     def initialize(button_text:)
-      super
+      super()
       @button_text = button_text
     end
 

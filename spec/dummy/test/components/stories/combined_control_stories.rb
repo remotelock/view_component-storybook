@@ -19,7 +19,7 @@ class CombinedControlStories < ViewComponent::Storybook::Stories
 
   control :button_text, as: :text, description: "Make this irresistible.", only: :described_control
 
-  def described_control(button_text: 'DO NOT PUSH!' )
+  def described_control(button_text: "DO NOT PUSH!")
     render Demo::ButtonComponent.new(button_text: button_text)
   end
 end

@@ -4,7 +4,7 @@ class MixedArgsComponent < ViewComponent::Base
   attr_reader :title, :message
 
   def initialize(title, message:)
-    super
+    super()
     @title = title
     @message = message
   end

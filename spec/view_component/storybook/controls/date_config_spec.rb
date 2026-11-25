@@ -21,11 +21,11 @@ RSpec.describe ViewComponent::Storybook::Controls::Date do
       expect(subject.to_csf_params).to eq(
         {
           args: {
-            button_text: expected_csf_value,
+            button_text: expected_csf_value
           },
           argTypes: {
-            button_text: { control: { type: type }, name: "Button Text" },
-          },
+            button_text: { control: { type: type }, name: "Button Text" }
+          }
         }
       )
     end

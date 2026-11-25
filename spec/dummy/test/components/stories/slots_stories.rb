@@ -9,7 +9,8 @@ class SlotsStories < ViewComponent::Storybook::Stories
   control :item3, as: :text
   control :footer_classes, as: :text
 
-  def default(classes: "mt-4", title: "This is my title!", subtitle: "This is my subtitle!", tab2: "Tab B", item2_highlighted: true, item3: "Item C", footer_classes: "text-blue")
+  def default(classes: "mt-4", title: "This is my title!", subtitle: "This is my subtitle!", tab2: "Tab B",
+              item2_highlighted: true, item3: "Item C", footer_classes: "text-blue")
     render SlotsComponent.new(classes: classes) do |c|
       c.with_title { title }
       c.with_subtitle { subtitle }

@@ -3,30 +3,30 @@
 class SlotsComponent < ViewComponent::Base
   renders_one :title
   renders_one :subtitle
-  renders_one :footer, ->(classes: "") do
+  renders_one :footer, lambda { |classes: ""|
     tag.footer(class: "footer #{classes}") do
       # block.call if block
     end
-  end
+  }
 
   renders_many :tabs
 
-  renders_many :items, ->(highlighted: false) do
+  renders_many :items, lambda { |highlighted: false|
     MyHighlightComponent.new(highlighted: highlighted)
-  end
+  }
 
   renders_one :extra, "ExtraComponent"
 
   renders_one :example, ExampleComponent
 
   def initialize(classes: "")
-    super
+    super()
     @classes = classes
   end
 
   class MyHighlightComponent < ViewComponent::Base
     def initialize(highlighted: false)
-      super
+      super()
       @highlighted = highlighted
     end
 
@@ -37,7 +37,7 @@ class SlotsComponent < ViewComponent::Base
 
   class ExtraComponent < ViewComponent::Base
     def initialize(message:)
-      super
+      super()
       @message = message
     end
 

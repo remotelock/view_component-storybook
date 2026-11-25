@@ -14,3 +14,5 @@
 .rspec_status
 
 .DS_Store
+/Gemfile.lock
+/gemfiles/*.lock

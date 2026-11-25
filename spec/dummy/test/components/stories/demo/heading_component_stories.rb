@@ -2,7 +2,7 @@
 
 module Demo
   class HeadingComponentStories < ViewComponent::Storybook::Stories
-    title 'Heading Component'
+    title "Heading Component"
 
     control :heading_text, as: :text, default: "Heading"
 

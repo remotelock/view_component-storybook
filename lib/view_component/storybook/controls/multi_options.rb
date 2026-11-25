@@ -9,16 +9,17 @@ module ViewComponent
         validates :type, inclusion: { in: TYPES }, unless: -> { type.nil? }
         validate :validate_default, unless: -> { options.nil? || default.nil? }
 
-        def initialize(param, type:, options:, default: nil, labels: nil, name: nil, description: nil, **opts)
-          super(param, type: type, options: options, default: Array.wrap(default), labels: labels, name: name, description: description, **opts)
+        def initialize(param, type:, options:, default: nil, labels: nil, name: nil, description: nil, **)
+          super(param, type: type, options: options, default: Array.wrap(default), labels: labels, name: name,
+                       description: description, **)
         end
 
         def parse_param_value(value)
-          if value.is_a?(String)
-            value = value.split(',')
-            value = value.map(&:to_sym) if symbol_values
+          return value unless value.is_a?(String)
+
+          value.split(",").map do |item|
+            options.find { |option| option.to_s == item } || (symbol_values? ? item.to_sym : item)
           end
-          value
         end
 
         def to_csf_params
@@ -31,7 +32,7 @@ module ViewComponent
           labels.nil? ? super : super.merge(labels: labels)
         end
 
-        def symbol_values
+        def symbol_values?
           options.first.is_a?(Symbol)
         end
 

@@ -4,7 +4,7 @@ class KwargsComponent < ViewComponent::Base
   attr_reader :message
 
   def initialize(**kwargs)
-    super
+    super()
     @message = kwargs[:message]
   end
 end

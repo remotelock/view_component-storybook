@@ -20,7 +20,10 @@ RSpec.describe ViewComponent::Storybook::Controls::Number do
       end
 
       context "with options" do
-        subject { described_class.new(param, type: number_type, default: default_value, **number_options, name: name, description: description) }
+        subject do
+          described_class.new(param, type: number_type, default: default_value, **number_options, name: name,
+                                     description: description)
+        end
 
         let(:number_options) { { min: 60, max: 90, step: 1 } }
 

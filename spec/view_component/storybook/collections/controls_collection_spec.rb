@@ -110,33 +110,29 @@ RSpec.describe ViewComponent::Storybook::Collections::ControlsCollection do
     end
 
     %w[select radio inline-radio].each do |type|
-      control_type = type.underscore
-
-      it "builds #{control_type} single option controls" do
-        subject.add :food, as: control_type.to_sym, options: [:hot_dog, :pizza], default: :pizza
+      it "builds #{type.underscore} single option controls" do
+        subject.add :food, as: type.underscore.to_sym, options: %i[hot_dog pizza], default: :pizza
 
         expect(short_controls.first).to have_attributes(
           class: ViewComponent::Storybook::Controls::Options,
           param: :food,
           type: type.to_sym,
           default: :pizza,
-          options: [:hot_dog, :pizza]
+          options: %i[hot_dog pizza]
         )
       end
     end
 
     %w[multi-select check inline-check].each do |type|
-      control_type = type.underscore
-
-      it "builds #{control_type} multi-option controls" do
-        subject.add :food, as: control_type.to_sym, options: [:hot_dog, :pizza], default: :pizza
+      it "builds #{type.underscore} multi-option controls" do
+        subject.add :food, as: type.underscore.to_sym, options: %i[hot_dog pizza], default: :pizza
 
         expect(short_controls.first).to have_attributes(
           class: ViewComponent::Storybook::Controls::MultiOptions,
           param: :food,
           type: type.to_sym,
           default: [:pizza],
-          options: [:hot_dog, :pizza]
+          options: %i[hot_dog pizza]
         )
       end
     end
@@ -211,7 +207,7 @@ RSpec.describe ViewComponent::Storybook::Collections::ControlsCollection do
 
     it "overwrites control declaration for only: Array(*story_names)" do
       subject.add :button_text, as: :text, default: "Hi"
-      subject.add :button_text, as: :color, default: "Red", only: [:medium_button, :long_button]
+      subject.add :button_text, as: :color, default: "Red", only: %i[medium_button long_button]
 
       expect(short_controls.first).to have_attributes(
         class: ViewComponent::Storybook::Controls::Text,
@@ -265,7 +261,7 @@ RSpec.describe ViewComponent::Storybook::Collections::ControlsCollection do
 
     it "overwrites control declaration for except: Array(*story_names)" do
       subject.add :button_text, as: :text, default: "Hi"
-      subject.add :button_text, as: :color, default: "Red", except: [:medium_button, :long_button]
+      subject.add :button_text, as: :color, default: "Red", except: %i[medium_button long_button]
 
       expect(short_controls.first).to have_attributes(
         class: ViewComponent::Storybook::Controls::Color,
