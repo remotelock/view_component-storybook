@@ -4,6 +4,6 @@ class DryComponentStories < ViewComponent::Storybook::Stories
   control :title, as: :text
 
   def default(title: "Hello World!")
-    render DryComponent.new(title: title)
+    render DryComponent.new(title, message: "How you doing?")
   end
 end

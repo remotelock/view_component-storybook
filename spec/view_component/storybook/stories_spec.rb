@@ -1,19 +1,24 @@
 # frozen_string_literal: true
 
 RSpec.describe ViewComponent::Storybook::Stories do
+  # Docs source is covered in preview_stories_spec; these compare the DSL's controls and parameters.
+  def without_docs(csf_params)
+    csf_params.merge(stories: csf_params[:stories].map { |story| story.deep_dup.tap { |s| s[:parameters].delete(:docs) } })
+  end
+
   describe ".to_csf_params" do
     it "converts" do
-      expect(ContentComponentStories.to_csf_params).to eq(
+      expect(without_docs(ContentComponentStories.to_csf_params)).to eq(
         title: "Content Component",
         stories: [
           {
-            name: :with_string_content,
+            name: "With String Content",
             parameters: {
               server: { id: "content_component/with_string_content" }
             }
           },
           {
-            name: :with_control_content,
+            name: "With Control Content",
             parameters: {
               server: { id: "content_component/with_control_content" }
             },
@@ -25,7 +30,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :with_described_control,
+            name: "With Described Control",
             parameters: {
               server: { id: "content_component/with_described_control" }
             },
@@ -38,37 +43,37 @@ RSpec.describe ViewComponent::Storybook::Stories do
           },
 
           {
-            name: :with_helper_content,
+            name: "With Helper Content",
             parameters: {
               server: { id: "content_component/with_helper_content" }
             }
-          },
+          }
         ]
       )
     end
 
     it "converts kwargs" do
-      expect(KwargsComponentStories.to_csf_params).to eq(
+      expect(without_docs(KwargsComponentStories.to_csf_params)).to eq(
         title: "Kwargs Component",
         stories: [
           {
-            name: :default,
+            name: "Default",
             parameters: {
               server: { id: "kwargs_component/default" }
             },
             args: {
               message: "Hello World!",
               param: 1,
-              other_param: true,
+              other_param: true
             },
             argTypes: {
               message: { control: { type: :text }, name: "Message" },
               param: { control: { type: :number }, name: "Param" },
-              other_param: { control: { type: :boolean }, name: "Other Param" },
+              other_param: { control: { type: :boolean }, name: "Other Param" }
             }
           },
           {
-            name: :fixed_args,
+            name: "Fixed Args",
             parameters: {
               server: { id: "kwargs_component/fixed_args" }
             },
@@ -80,17 +85,17 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :custom_param,
+            name: "Custom Param",
             parameters: {
               server: { id: "kwargs_component/custom_param" }
             },
             args: {
               my_message: "Hello World!",
-              param: 1,
+              param: 1
             },
             argTypes: {
               my_message: { control: { type: :text }, name: "My Message" },
-              param: { control: { type: :number }, name: "Param" },
+              param: { control: { type: :number }, name: "Param" }
             }
           }
         ]
@@ -98,25 +103,25 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts args" do
-      expect(ArgsComponentStories.to_csf_params).to eq(
+      expect(without_docs(ArgsComponentStories.to_csf_params)).to eq(
         title: "Args Component",
         stories: [
           {
-            name: :default,
+            name: "Default",
             parameters: {
               server: { id: "args_component/default" }
             },
             args: {
               items0: "Hello World!",
-              items1: "How you doing?",
+              items1: "How you doing?"
             },
             argTypes: {
               items0: { control: { type: :text }, name: "Items0" },
-              items1: { control: { type: :text }, name: "Items1" },
+              items1: { control: { type: :text }, name: "Items1" }
             }
           },
           {
-            name: :fixed_args,
+            name: "Fixed Args",
             parameters: {
               server: { id: "args_component/fixed_args" }
             },
@@ -128,17 +133,17 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :custom_param,
+            name: "Custom Param",
             parameters: {
               server: { id: "args_component/custom_param" }
             },
             args: {
               message: "Hello World!",
-              items1: "How you doing?",
+              items1: "How you doing?"
             },
             argTypes: {
               message: { control: { type: :text }, name: "Message" },
-              items1: { control: { type: :text }, name: "Items1" },
+              items1: { control: { type: :text }, name: "Items1" }
             }
           }
         ]
@@ -146,25 +151,25 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts mixed args" do
-      expect(MixedArgsComponentStories.to_csf_params).to eq(
+      expect(without_docs(MixedArgsComponentStories.to_csf_params)).to eq(
         title: "Mixed Args Component",
         stories: [
           {
-            name: :default,
+            name: "Default",
             parameters: {
               server: { id: "mixed_args_component/default" }
             },
             args: {
               title: "Hello World!",
-              message: "How you doing?",
+              message: "How you doing?"
             },
             argTypes: {
               title: { control: { type: :text }, name: "Title" },
-              message: { control: { type: :text }, name: "Message" },
+              message: { control: { type: :text }, name: "Message" }
             }
           },
           {
-            name: :fixed_args,
+            name: "Fixed Args",
             parameters: {
               server: { id: "mixed_args_component/fixed_args" }
             }
@@ -174,11 +179,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts controls with default" do
-      expect(ControlDefaultStories.to_csf_params).to eq(
+      expect(without_docs(ControlDefaultStories.to_csf_params)).to eq(
         title: "Control Default",
         stories: [
           {
-            name: :example,
+            name: "Example",
             parameters: {
               server: { id: "control_default/example" }
             },
@@ -188,17 +193,17 @@ RSpec.describe ViewComponent::Storybook::Stories do
             argTypes: {
               content: { control: { type: :text }, name: "Content" }
             }
-          },
+          }
         ]
       )
     end
 
     it "converts kitchen sink" do
-      expect(KitchenSinkComponentStories.to_csf_params).to eq(
+      expect(without_docs(KitchenSinkComponentStories.to_csf_params)).to eq(
         title: "Kitchen Sink Component",
         stories: [
           {
-            name: :jane_doe,
+            name: "Jane Doe",
             parameters: {
               server: { id: "kitchen_sink_component/jane_doe" }
             },
@@ -223,7 +228,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
               sports: { control: { type: :object }, name: "Sports" },
               favorite_food: {
                 control: {
-                  type: :select,
+                  type: :select
                 },
                 name: "Favorite Food",
                 options: ["Burgers", "Hot Dog", "Ice Cream", "Pizza"]
@@ -231,12 +236,12 @@ RSpec.describe ViewComponent::Storybook::Stories do
               mood: {
                 control: {
                   type: :radio,
-                  labels: { happy: "Happy", sad: "Sad", angry: "Angry", content: "Content" },
+                  labels: { happy: "Happy", sad: "Sad", angry: "Angry", content: "Content" }
                 },
                 name: "Mood",
-                options: [:happy, :sad, :angry, :content]
+                options: %i[happy sad angry content]
               },
-              other_things: { control: { type: :object }, name: "Other Things" },
+              other_things: { control: { type: :object }, name: "Other Things" }
             }
           }
         ]
@@ -244,11 +249,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts Stories with namespaces" do
-      expect(Demo::ButtonComponentStories.to_csf_params).to eq(
+      expect(without_docs(Demo::ButtonComponentStories.to_csf_params)).to eq(
         title: "Demo/Button Component",
         stories: [
           {
-            name: :short_button,
+            name: "Short Button",
             parameters: {
               server: { id: "demo/button_component/short_button" }
             },
@@ -260,7 +265,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :medium_button,
+            name: "Medium Button",
             parameters: {
               server: { id: "demo/button_component/medium_button" }
             },
@@ -272,7 +277,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :long_button,
+            name: "Long Button",
             parameters: {
               server: { id: "demo/button_component/long_button" }
             },
@@ -289,11 +294,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
 
     context "with a custom story title defined" do
       it "converts Stories" do
-        expect(Demo::HeadingComponentStories.to_csf_params).to eq(
+        expect(without_docs(Demo::HeadingComponentStories.to_csf_params)).to eq(
           title: "Heading Component",
           stories: [
             {
-              name: :default,
+              name: "Default",
               parameters: {
                 server: { id: "demo/heading_component/default" }
               },
@@ -337,7 +342,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
       end
 
       it "converts Stories" do
-        expect(Demo::MoreButtonComponentStories.to_csf_params).to eq(
+        expect(without_docs(Demo::MoreButtonComponentStories.to_csf_params)).to eq(
           title: custom_story_title,
           stories: []
         )
@@ -349,12 +354,12 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts Stories with parameters" do
-      expect(ParametersStories.to_csf_params).to eq(
+      expect(without_docs(ParametersStories.to_csf_params)).to eq(
         title: "Parameters",
         parameters: { size: :small },
         stories: [
           {
-            name: :stories_parameters,
+            name: "Stories Parameters",
             parameters: {
               server: { id: "parameters/stories_parameters" }
             },
@@ -366,11 +371,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :stories_parameter_override,
+            name: "Stories Parameter Override",
             parameters: {
               server: { id: "parameters/stories_parameter_override" },
               size: :large,
-              color: :red,
+              color: :red
             },
             args: {
               button_text: "OK"
@@ -380,10 +385,10 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :additional_parameters,
+            name: "Additional Parameters",
             parameters: {
               server: { id: "parameters/additional_parameters" },
-              color: :red,
+              color: :red
             },
             args: {
               button_text: "OK"
@@ -397,11 +402,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts Stories with combined controls" do
-      expect(CombinedControlStories.to_csf_params).to eq(
+      expect(without_docs(CombinedControlStories.to_csf_params)).to eq(
         title: "Combined Control",
         stories: [
           {
-            name: :combined_text,
+            name: "Combined Text",
             parameters: {
               server: { id: "combined_control/combined_text" }
             },
@@ -415,7 +420,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :combined_rest_args,
+            name: "Combined Rest Args",
             parameters: {
               server: { id: "combined_control/combined_rest_args" }
             },
@@ -423,7 +428,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
               verb_one: "Big",
               noun_one: "Car",
               verb_two: "Small",
-              noun_two: "Boat",
+              noun_two: "Boat"
             },
             argTypes: {
               verb_one: { control: { type: :text }, name: "Verb One" },
@@ -433,7 +438,7 @@ RSpec.describe ViewComponent::Storybook::Stories do
             }
           },
           {
-            name: :described_control,
+            name: "Described Control",
             args: {
               button_text: "DO NOT PUSH!"
             },
@@ -449,11 +454,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "converts Stories with slots" do
-      expect(SlotsStories.to_csf_params).to eq(
+      expect(without_docs(SlotsStories.to_csf_params)).to eq(
         title: "Slots",
         stories: [
           {
-            name: :default,
+            name: "Default",
             parameters: {
               server: { id: "slots/default" }
             },
@@ -494,70 +499,11 @@ RSpec.describe ViewComponent::Storybook::Stories do
     end
 
     it "writes stories to json files" do
-      json_file = File.read(subject)
-      expect(json_file).to eq(
-        <<~JSON.strip
-          {
-            "title": "Content Component",
-            "stories": [
-              {
-                "name": "with_string_content",
-                "parameters": {
-                  "server": {
-                    "id": "content_component/with_string_content"
-                  }
-                }
-              },
-              {
-                "name": "with_control_content",
-                "parameters": {
-                  "server": {
-                    "id": "content_component/with_control_content"
-                  }
-                },
-                "args": {
-                  "content": "Hello World!"
-                },
-                "argTypes": {
-                  "content": {
-                    "control": {
-                      "type": "text"
-                    },
-                    "name": "Content"
-                  }
-                }
-              },
-              {
-                "name": "with_described_control",
-                "parameters": {
-                  "server": {
-                    "id": "content_component/with_described_control"
-                  }
-                },
-                "args": {
-                  "content": "Hello World!"
-                },
-                "argTypes": {
-                  "content": {
-                    "control": {
-                      "type": "text"
-                    },
-                    "name": "Content",
-                    "description": "My first computer program."
-                  }
-                }
-              },
-              {
-                "name": "with_helper_content",
-                "parameters": {
-                  "server": {
-                    "id": "content_component/with_helper_content"
-                  }
-                }
-              }
-            ]
-          }
-        JSON
+      json = JSON.parse(File.read(subject))
+      expect(json).to eq(JSON.parse(ContentComponentStories.to_csf_params.to_json))
+      expect(json["stories"].first).to include(
+        "name" => "With String Content",
+        "parameters" => include("server" => { "id" => "content_component/with_string_content" })
       )
     end
   end
