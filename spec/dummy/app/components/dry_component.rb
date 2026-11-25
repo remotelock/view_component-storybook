@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'dry-initializer'
+require "dry-initializer"
 
 class DryComponent < ViewComponent::Base
   extend Dry::Initializer

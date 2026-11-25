@@ -1,17 +1,59 @@
-require:
+plugins:
   - rubocop-rails
   - rubocop-rspec
 
-inherit_gem:
-  relaxed-rubocop: .rubocop.yml
-
 AllCops:
-  TargetRubyVersion: 2.6.0
+  TargetRubyVersion: 3.3
   NewCops: enable
   SuggestExtensions: false
+  Exclude:
+    - "docs/**/*"
+    - "gemfiles/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+
+Layout/LineLength:
+  Max: 130
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/MethodLength:
+  Max: 30
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "**/*.rake"
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Rails/RakeEnvironment:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Exclude:
+    - "spec/view_component/storybook/params_coercion_spec.rb"
+    - "spec/view_component/storybook/rake_tasks_spec.rb"
 
 RSpec/ExampleLength:
- Enabled: false
+  Enabled: false
 
 RSpec/MultipleExpectations:
   Max: 10
@@ -28,8 +70,11 @@ RSpec/SubjectStub:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
-Rails/RakeEnvironment:
+RSpec/SpecFilePathFormat:
   Enabled: false
 
 Style/FormatStringToken:
+  Enabled: false
+
+RSpec/IncludeExamples:
   Enabled: false

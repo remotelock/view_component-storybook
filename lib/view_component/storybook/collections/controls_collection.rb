@@ -6,6 +6,23 @@ module ViewComponent
       class ControlsCollection
         include Collections::ValidForStoryConcern
 
+        CONTROLS = {
+          text: [Controls::Text, {}],
+          boolean: [Controls::Boolean, {}],
+          number: [Controls::Number, { type: :number }],
+          range: [Controls::Number, { type: :range }],
+          color: [Controls::Color, {}],
+          object: [Controls::Object, {}],
+          array: [Controls::Object, {}],
+          select: [Controls::Options, { type: :select }],
+          multi_select: [Controls::MultiOptions, { type: :"multi-select" }],
+          radio: [Controls::Options, { type: :radio }],
+          inline_radio: [Controls::Options, { type: :"inline-radio" }],
+          check: [Controls::MultiOptions, { type: :check }],
+          inline_check: [Controls::MultiOptions, { type: :"inline-check" }],
+          date: [Controls::Date, {}]
+        }.freeze
+
         attr_reader :controls
 
         attr_accessor :code_object
@@ -14,8 +31,8 @@ module ViewComponent
           @controls = []
         end
 
-        def add(param, as:, only: nil, except: nil, **opts)
-          controls << { param: param, as: as, only: only, except: except, **opts }
+        def add(param, as:, only: nil, except: nil, **)
+          controls << { param: param, as: as, only: only, except: except, ** }
         end
 
         def for_story(story_name)
@@ -25,9 +42,7 @@ module ViewComponent
             next unless valid_for_story?(story_name, **opts.slice(:only, :except))
 
             param = opts[:param]
-            unless opts.key?(:default)
-              opts = opts.merge(default: parse_default(story_name, param))
-            end
+            opts = opts.merge(default: parse_default(story_name, param)) unless opts.key?(:default)
             [param, build_control(param, **opts.except(:param, :only, :except))]
           end.compact.to_h.values
         end
@@ -39,40 +54,12 @@ module ViewComponent
           default_value_parts = code_method.parameters.find { |parts| parts[0].chomp(":") == param.to_s }
           return unless default_value_parts
 
-          code_method.instance_eval(default_value_parts[1])
+          Storybook.evaluate_default(default_value_parts[1], code_method)
         end
 
-        def build_control(param, as:, **opts)
-          case as
-          when :text
-            Controls::Text.new(param, **opts)
-          when :boolean
-            Controls::Boolean.new(param, **opts)
-          when :number
-            Controls::Number.new(param, type: :number, **opts)
-          when :range
-            Controls::Number.new(param, type: :range, **opts)
-          when :color
-            Controls::Color.new(param, **opts)
-          when :object, :array
-            Controls::Object.new(param, **opts)
-          when :select
-            Controls::Options.new(param, type: :select, **opts)
-          when :multi_select
-            Controls::MultiOptions.new(param, type: :'multi-select', **opts)
-          when :radio
-            Controls::Options.new(param, type: :radio, **opts)
-          when :inline_radio
-            Controls::Options.new(param, type: :'inline-radio', **opts)
-          when :check
-            Controls::MultiOptions.new(param, type: :check, **opts)
-          when :inline_check
-            Controls::MultiOptions.new(param, type: :'inline-check', **opts)
-          when :date
-            Controls::Date.new(param, **opts)
-          else
-            raise "Unknonwn control type '#{as}'"
-          end
+        def build_control(param, as:, **)
+          klass, defaults = CONTROLS.fetch(as) { raise ArgumentError, "Unknown control type '#{as}'" }
+          klass.new(param, **defaults, **)
         end
       end
     end

@@ -4,7 +4,7 @@ class ArgsComponent < ViewComponent::Base
   attr_reader :items
 
   def initialize(*items)
-    super
+    super()
     @items = items
   end
 end

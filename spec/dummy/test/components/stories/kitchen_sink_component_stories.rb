@@ -40,7 +40,8 @@ class KitchenSinkComponentStories < ViewComponent::Storybook::Stories
   control :number_pets, as: :number
   control :sports, as: :array
   control :favorite_food, as: :select, options: ["Burgers", "Hot Dog", "Ice Cream", "Pizza"]
-  control :mood, as: :radio, options: [:happy, :sad, :angry, :content], labels: { happy: "Happy", sad: "Sad", angry: "Angry", content: "Content" }
+  control :mood, as: :radio, options: %i[happy sad angry content],
+                 labels: { happy: "Happy", sad: "Sad", angry: "Angry", content: "Content" }
   control :other_things, as: :object
 
   def jane_doe(

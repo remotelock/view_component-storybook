@@ -2,7 +2,7 @@
 
 class ExampleComponent < ViewComponent::Base
   def initialize(title:)
-    super
+    super()
     @title = title
   end
 

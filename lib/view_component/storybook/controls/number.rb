@@ -11,8 +11,8 @@ module ViewComponent
         validates :type, presence: true
         validates :type, inclusion: { in: TYPES }, unless: -> { type.nil? }
 
-        def initialize(param, type:, default: nil, min: nil, max: nil, step: nil, name: nil, description: nil, **opts)
-          super(param, default: default, name: name, description: description, **opts)
+        def initialize(param, type:, default: nil, min: nil, max: nil, step: nil, name: nil, description: nil, **)
+          super(param, default: default, name: name, description: description, **)
           @type = type
           @min = min
           @max = max
@@ -21,7 +21,7 @@ module ViewComponent
 
         def parse_param_value(value)
           if value.is_a?(String) && value.present?
-            (value.to_f % 1) > 0 ? value.to_f : value.to_i
+            (value.to_f % 1).positive? ? value.to_f : value.to_i
           else
             value
           end

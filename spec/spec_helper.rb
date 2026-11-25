@@ -7,25 +7,25 @@ require "bundler/setup"
 ENV["RAILS_ENV"] = "test"
 require File.expand_path("dummy/config/environment.rb", __dir__)
 
-ActiveSupport::Deprecation.silenced = true
+ViewComponent::Storybook.deprecator.silenced = true
 
 require "rspec/expectations"
 require "rspec/rails"
-require 'capybara/rspec'
+require "capybara/rspec"
 
 RSpec.configure do |config|
   config.include Capybara::RSpecMatchers, type: :request
 end
 
-require 'simplecov'
+require "simplecov"
 SimpleCov.start do
-  ruby_version = ENV.fetch('RUBY_VERSION', nil)
-  rails_version = ENV.fetch('RAILS_VERSION', nil)
+  ruby_version = ENV.fetch("RUBY_VERSION", nil)
+  rails_version = ENV.fetch("RAILS_VERSION", nil)
   command_name "rails#{rails_version}-ruby#{ruby_version}" if ruby_version && rails_version
-  add_filter 'spec'
+  add_filter "spec"
 end
 
-Dir[File.expand_path(File.join(File.dirname(__FILE__), "support", "**", "*.rb"))].sort.each { |f| require f }
+Dir[File.expand_path(File.join(File.dirname(__FILE__), "support", "**", "*.rb"))].each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

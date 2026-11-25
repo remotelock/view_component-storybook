@@ -31,7 +31,7 @@ shared_examples "a controls config" do
     end
   end
 
-  describe '#description' do
+  describe "#description" do
     it "by default is nil" do
       expect(subject.description).to be_nil
     end
@@ -87,11 +87,11 @@ shared_examples "a simple controls config" do
   let(:expected_csf_params) do
     {
       args: {
-        button_text: expected_csf_value,
+        button_text: expected_csf_value
       },
       argTypes: {
-        button_text: { control: { type: type }.merge(csf_arg_type_control_overrides), name: "Button Text" },
-      },
+        button_text: { control: { type: type }.merge(csf_arg_type_control_overrides), name: "Button Text" }
+      }
     }
   end
 
@@ -127,6 +127,7 @@ shared_examples "a simple controls config" do
   end
 
   let(:param_value) { "OK" }
+
   describe "#parse_param_value" do
     it "parses param_value" do
       expect(subject.parse_param_value(param_value)).to eq(default_value)
@@ -148,11 +149,11 @@ shared_examples "an options config" do |default_value|
 
       {
         args: {
-          button_text: expected_csf_value,
+          button_text: expected_csf_value
         },
         argTypes: {
-          button_text: { control: { type: type, **control_labels }, name: "Button Text", options: options },
-        },
+          button_text: { control: { type: type, **control_labels }, name: "Button Text", options: options }
+        }
       }
     end
   end

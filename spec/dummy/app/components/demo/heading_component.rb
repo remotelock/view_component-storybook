@@ -3,7 +3,7 @@
 module Demo
   class HeadingComponent < ViewComponent::Base
     def initialize(heading_text:)
-      super
+      super()
       @heading_text = heading_text
     end
 

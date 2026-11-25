@@ -1,76 +1,55 @@
 # frozen_string_literal: true
 
-require "view_component"
-require "action_cable/engine"
-require "yard"
-
 module ViewComponent
   module Storybook
     class Engine < Rails::Engine
       config.view_component_storybook = ActiveSupport::OrderedOptions.new
-      config.view_component_storybook.stories_paths ||= []
+      config.view_component_storybook.stories_paths = []
 
-      initializer "view_component_storybook.set_configs" do |app|
+      initializer "view_component_storybook.set_configs",
+                  after: "view_component.set_configs", before: "view_component.set_autoload_paths" do |app|
         options = app.config.view_component_storybook
 
-        options.show_stories = Rails.env.development? if options.show_stories.nil?
-        options.stories_route ||= "/rails/stories"
+        stories_dir = Rails.root.join("test/components/stories").to_s
+        options.stories_paths |= [stories_dir] if Dir.exist?(stories_dir)
+        options.static_html_path ||= Rails.root.join("tmp/storybook/html").to_s
 
-        if options.show_stories && (defined?(Rails.root) && Rails.root.join("test/components/stories").exist?)
-          options.stories_paths << Rails.root.join("test/components/stories").to_s
+        # ViewComponent autoloads its preview paths, and its controller finds stories classes among them.
+        previews = app.config.view_component.previews
+        previews.paths |= options.stories_paths.map(&:to_s) if previews.enabled != false
 
-        end
-
-        options.stories_title_generator ||= ViewComponent::Storybook.stories_title_generator
-
-        ActiveSupport.on_load(:view_component_storybook) do
-          options.each { |k, v| send("#{k}=", v) }
-        end
+        Engine.apply(options)
       end
 
-      initializer "view_component_storybook.set_autoload_paths" do |app|
-        options = app.config.view_component_storybook
-
-        if options.show_stories && !options.stories_paths.empty?
-          paths_to_add = options.stories_paths - ActiveSupport::Dependencies.autoload_paths
-          ActiveSupport::Dependencies.autoload_paths.concat(paths_to_add) if paths_to_add.any?
-        end
+      initializer "view_component_storybook.deprecator" do |app|
+        app.deprecators[:view_component_storybook] = Storybook.deprecator if app.respond_to?(:deprecators)
       end
 
-      initializer "view_component_storybook.parser.stories_load_callback" do
-        parser.after_parse do |code_objects|
-          Engine.stories.load(code_objects.all(:class))
-        end
-      end
-
+      # After the app's initializers: ViewComponent::Preview includes the app's url helpers when it loads.
       config.after_initialize do
-        parser.parse
+        ViewComponent::Preview.singleton_class.prepend(PreviewExtension)
+      end
+
+      config.to_prepare { Storybook.reset! }
+
+      REMOVED_OPTIONS = {
+        show_stories: "ViewComponent's config.view_component.previews.enabled decides",
+        stories_route: "stories render at ViewComponent's config.view_component.previews.route"
+      }.freeze
+
+      def self.apply(options)
+        options.each do |key, value|
+          if REMOVED_OPTIONS.key?(key.to_sym)
+            Storybook.deprecator.warn("config.view_component_storybook.#{key} is ignored: #{REMOVED_OPTIONS[key.to_sym]}")
+          else
+            Storybook.public_send(:"#{key}=", value)
+          end
+        end
       end
 
       rake_tasks do
         load File.join(__dir__, "tasks/view_component_storybook.rake")
       end
-
-      def parser
-        @parser ||= StoriesParser.new(ViewComponent::Storybook.stories_paths)
-      end
-
-      class << self
-        def stories
-          @stories ||= Collections::StoriesCollection.new
-        end
-      end
     end
   end
 end
-
-# :nocov:
-unless defined?(ViewComponent::Storybook::Stories)
-  ActiveSupport::Deprecation.warn(
-    "This manually engine loading is deprecated and will be removed in v1.0.0. " \
-    "Remove `require \"view_component/storybook/engine\"`."
-  )
-
-  require "view_component/storybook"
-end
-# :nocov:

@@ -8,7 +8,9 @@ RSpec.describe ViewComponent::Storybook::Controls::Color do
   it_behaves_like "a simple controls config"
 
   context "with :preset_color array" do
-    subject { described_class.new(param, default: default_value, name: name, description: description, preset_colors: preset_colors) }
+    subject do
+      described_class.new(param, default: default_value, name: name, description: description, preset_colors: preset_colors)
+    end
 
     let(:preset_colors) { %w[red green blue] }
 
