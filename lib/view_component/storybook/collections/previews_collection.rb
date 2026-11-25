@@ -24,7 +24,9 @@ module ViewComponent
         end
 
         def self.preview_class?(klass)
-          return false if klass.name.nil? || klass == Stories
+          # By name: comparing with the constant would load the deprecated base, and
+          # every other list of previews (ViewComponent's, Lookbook's) would show it.
+          return false if klass.name.nil? || klass.name == "ViewComponent::Storybook::Stories"
           return false if klass.respond_to?(:abstract_class) && klass.abstract_class
 
           true
