@@ -6,6 +6,8 @@ nav_order: 1
 
 # ViewComponent Storybook
 
+> These pages describe 1.x. For 2.x (ViewComponent 4, Storybook 10, plain previews), see the [README](https://github.com/remotelock/view_component-storybook#readme).
+
 A framework for writing [Storybook](https://github.com/storybookjs/storybook/) stories for Ruby on Rails [View Components](https://github.com/github/view_component) via [Storybook/Server](https://github.com/storybookjs/storybook/tree/next/app/server).
 
 ## What is a ViewComponent Story?
